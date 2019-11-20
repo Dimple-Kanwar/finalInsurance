@@ -3,7 +3,7 @@
 
 // let url='https://maps.googleapis.com/maps/api/geocode/json?address=';
 // let API_KEY='b1a922289ad34d00bda61f29445e2a07'
-let address = "Plot No. 25, JP Software Park, Electronics City, Phase-1, Hosur Road, Bengaluru, Karnataka 560100"
+let address = "New Sanganer Road Jai Shanker Colony Geetanjali Colony, Manyawas, Mansarovar Sector 4, Jaipur, Rajasthan 302020"
 // url = url+address+"&"+API_KEY;
 // console.log("url: ", url);
 
@@ -33,13 +33,17 @@ let address = "Plot No. 25, JP Software Park, Electronics City, Phase-1, Hosur R
 const opencage = require('opencage-api-client');
 
 opencage.geocode({q: address}).then(data => {
-  console.log(JSON.stringify(data));
+  //console.log(JSON.stringify(data));
   if (data.status.code == 200) {
     if (data.results.length > 0) {
       var place = data.results[0];
-      console.log(place.formatted);
-      console.log(place.geometry);
-      console.log(place.annotations.timezone.name);
+      //console.log(place.formatted);
+      console.log(place.geometry.lat);
+      console.log(place.geometry.lng);
+      coordinates = place.geometry.lat+","+place.geometry.lng
+      console.log(coordinates);
+      return coordinates;
+      //console.log(place.annotations.timezone.name);
     }
   } else if (data.status.code == 402) {
     console.log('hit free-trial daily limit');
@@ -48,9 +52,11 @@ opencage.geocode({q: address}).then(data => {
     // other possible response codes:
     // https://opencagedata.com/api#codes
     console.log('error', data.status.message);
+    return data.status.message;
   }
 }).catch(error => {
   console.log('error', error.message);
+  return data.message;
 });
 
 // ... prints

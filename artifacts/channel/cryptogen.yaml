@@ -110,14 +110,14 @@ PeerOrgs:
   # ---------------------------------------------------------------------------
   # Org3: See "Org1" for full specification
   # ---------------------------------------------------------------------------
-  - Name: Org3
-    Domain: org3.example.com
-    CA:
-       Hostname: ca # implicitly ca.org3.example.com
+  # - Name: Org3
+  #   Domain: org3.example.com
+  #   CA:
+  #      Hostname: ca # implicitly ca.org3.example.com
 
-    Template:
-      Count: 3
-      SANS:
-        - "localhost"
-    Users:
-      Count: 1
+  #   Template:
+  #     Count: 3
+  #     SANS:
+  #       - "localhost"
+  #   Users:
+  #     Count: 1

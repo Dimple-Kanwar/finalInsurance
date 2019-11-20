@@ -40,10 +40,10 @@ function setChaincodePath(){
 	LANGUAGE=`echo "$LANGUAGE" | tr '[:upper:]' '[:lower:]'`
 	case "$LANGUAGE" in
 		"golang")
-		CC_SRC_PATH="github.com/example_cc/go"
+		CC_SRC_PATH="github.com/chaincodes/Users"
 		;;
 		"node")
-		CC_SRC_PATH="$PWD/artifacts/src/github.com/example_cc/node"
+		CC_SRC_PATH="$PWD/artifacts/src/github.com/chaincodes/Users"
 		;;
 		*) printf "\n ------ Language $LANGUAGE is not supported yet ------\n"$
 		exit 1
@@ -58,7 +58,7 @@ ORG1_TOKEN=$(curl -s -X POST \
   http://localhost:4000/users \
   -H "content-type: application/x-www-form-urlencoded" \
   -d 'username=Jim&orgName=Org1')
-echo $ORG1_TOKEN
+echo $ORG1_TOKEN eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzQyNzg5NDAsInVzZXJuYW1lIjoiSmltIiwib3JnTmFtZSI6Ik9yZzEiLCJpYXQiOjE1NzQyNDI5NDB9.izis877KZyKZJmXMoSTlc2rakdp0Ww_lm76Kjxyc2YM
 ORG1_TOKEN=$(echo $ORG1_TOKEN | jq ".token" | sed "s/\"//g")
 echo
 echo "ORG1 token is $ORG1_TOKEN"
@@ -144,7 +144,7 @@ curl -s -X POST \
   -H "content-type: application/json" \
   -d "{
 	\"peers\": [\"peer0.org1.example.com\",\"peer1.org1.example.com\"],
-	\"chaincodeName\":\"mycc\",
+	\"chaincodeName\":\"usercc\",
 	\"chaincodePath\":\"$CC_SRC_PATH\",
 	\"chaincodeType\": \"$LANGUAGE\",
 	\"chaincodeVersion\":\"v0\"
@@ -160,7 +160,7 @@ curl -s -X POST \
   -H "content-type: application/json" \
   -d "{
 	\"peers\": [\"peer0.org2.example.com\",\"peer1.org2.example.com\"],
-	\"chaincodeName\":\"mycc\",
+	\"chaincodeName\":\"usercc\",
 	\"chaincodePath\":\"$CC_SRC_PATH\",
 	\"chaincodeType\": \"$LANGUAGE\",
 	\"chaincodeVersion\":\"v0\"
@@ -175,10 +175,10 @@ curl -s -X POST \
   -H "authorization: Bearer $ORG1_TOKEN" \
   -H "content-type: application/json" \
   -d "{
-	\"chaincodeName\":\"mycc\",
+	\"chaincodeName\":\"usercc\",
 	\"chaincodeVersion\":\"v0\",
 	\"chaincodeType\": \"$LANGUAGE\",
-	\"args\":[\"a\",\"100\",\"b\",\"200\"]
+	\"args\":[]
 }"
 echo
 echo
@@ -186,13 +186,13 @@ echo
 echo "POST invoke chaincode on peers of Org1 and Org2"
 echo
 VALUES=$(curl -s -X POST \
-  http://localhost:4000/channels/mychannel/chaincodes/mycc \
+  http://localhost:4000/channels/mychannel/chaincodes/usercc \
   -H "authorization: Bearer $ORG1_TOKEN" \
   -H "content-type: application/json" \
   -d "{
   \"peers\": [\"peer0.org1.example.com\",\"peer0.org2.example.com\"],
-  \"fcn\":\"move\",
-  \"args\":[\"a\",\"b\",\"10\"]
+  \"fcn\":\"registerUser\",
+  \"args\":[\"user1\",\"Farmer\",\"Ram Kumar\",\"Farm1\",\"New Sanganer Road Jai Shanker Colony Geetanjali Colony, Manyawas, Mansarovar Sector 4, Jaipur, Rajasthan 302020\,\"26.8626,75.7633\",\"Rice\",\"Food\",\"Rabi\",\"seed sowing\",\"6231547\",\"icici bank\",\"Mansarovar, Jaipur, Rajasthan, 302020\",\"9632587410\",\"NONE\"]
 }")
 echo $VALUES
 # Assign previous invoke transaction id  to TRX_ID
@@ -203,7 +203,7 @@ echo
 echo "GET query chaincode on peer1 of Org1"
 echo
 curl -s -X GET \
-  "http://localhost:4000/channels/mychannel/chaincodes/mycc?peer=peer0.org1.example.com&fcn=query&args=%5B%22a%22%5D" \
+  "http://localhost:4000/channels/mychannel/chaincodes/usercc?peer=peer0.org1.example.com&fcn=fetchUserDataByUserID&args=%5B%22a%22%5D" \
   -H "authorization: Bearer $ORG1_TOKEN" \
   -H "content-type: application/json"
 echo

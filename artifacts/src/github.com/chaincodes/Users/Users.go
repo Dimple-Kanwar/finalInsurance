@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -20,40 +21,40 @@ type Users struct {
 //	Define the User structure.  Structure tags are used by encoding/json library
 //==============================================================================================================================
 type User struct {
-	User_Id         string    `json:"user_id"`
-	User_Type       string    `json:"user_type"`
-	FullName        string    `json:"fullname"`
-	Farms           []Farm    `json:"farms"`
-	Account_Details []Account `json:"account_details"`
-	HomeAddress     string    `json:"home_address"`
-	Phone           int       `json:"phone"`
-	Email           string    `json:"email"`
+	UserID         string    `json:"userID"`
+	UserType       string    `json:"userType"`
+	FullName       string    `json:"fullname"`
+	Farms          []Farm    `json:"farms"`
+	AccountDetails []Account `json:"accountDetails"`
+	HomeAddress    string    `json:"homeAddress"`
+	Phone          int       `json:"phone"`
+	Email          string    `json:"email"`
 }
 
 //==============================================================================================================================
 //	Define Account structure
 //==============================================================================================================================
 type Account struct {
-	Account_Number int     `json:"account_number"`
-	Balance        float32 `json:"balance"`
-	Bank_Name      string  `json:"bank_name"`
+	AccountNumber int     `json:"accountNumber"`
+	Balance       float64 `json:"balance"`
+	BankName      string  `json:"bankName"`
 }
 
 //==============================================================================================================================
 //	Define Farm structure
 //==============================================================================================================================
 type Farm struct {
-	Farm_Id      string    `json:"farm_id"`
-	Address      string    `json:"address"`
-	Coordinates  []float32 `json:"coordinates"`
-	Crop_Details []Crop    `json:"crop_details"`
+	FarmID      string `json:"farmID"`
+	Address     string `json:"address"`
+	Coordinates string `json:"coordinates"`
+	CropDetails []Crop `json:"cropDetails"`
 }
 
 type Crop struct {
-	Crop_name  string    `json:"crop_name"`
-	Crop_type  string    `json:"crop_type"`
-	Season     []float32 `json:"season"`
-	Crop_state []Crop    `json:"crop_state"`
+	CropName  string `json:"cropName"`
+	CropType  string `json:"cropType"`
+	Season    string `json:"season"`
+	CropState string `json:"cropState"`
 }
 
 //==============================================================================================================================
@@ -94,52 +95,65 @@ func (s *Users) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
 //==============================================================================================================================
 //	registerUser - Register a new user
 // Input -
-//{user_id, user_type, fullname, farms, account_details, home_address, phone,}
+//{userID, userType, fullname, farms, account_details, homeAddress, phone,}
 //==============================================================================================================================
 func (s *Users) registerUser(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 	fmt.Println("============= START : Registering a user =============")
 	fmt.Println("args: ", args)
-	if args.length != 8 {
-		msg := "Incorrect number of arguments. Expected 8 arguments."
+	if len(args) != 15 {
+		msg := "Incorrect number of arguments. Expected 15 arguments."
 		fmt.Println(msg)
 		return shim.Error(msg)
 	}
-	user_id := args[0]
-	user_type := strings.ToLower(args[1])
+	userID := args[0]
+	userType := strings.ToLower(args[1])
 	fullname := args[2]
-	farms := args[3]
-	account_details := args[4]
-	home_address := args[5]
-	phone, err := strconv.Atoi(args[6])
+	farmID := args[3]
+	address := args[4]
+	coordinates := args[5]
+	cropName := args[6]
+	cropType := args[7]
+	season := args[8]
+	cropState := args[9]
+	accountNumber, err := strconv.Atoi(args[10])
+	if err != nil {
+		return shim.Error("accountNumber must be a numeric string")
+	}
+	balance := 0.0
+	bankName := args[11]
+	homeAddress := args[12]
+	phone, err := strconv.Atoi(args[13])
 	if err != nil {
 		return shim.Error("phone must be a numeric string")
 	}
-	email := args[7]
+	email := args[14]
 
 	// ==== Check if user already exists ====
-	userAsBytes, err := APIstub.GetState(user_id)
+	userAsBytes, err := APIstub.GetState(userID)
 	if err != nil {
 		return shim.Error("Failed to get user: " + err.Error())
 	} else if userAsBytes != nil {
-		msg := "This user already exists: " + user_id
+		msg := "This user already exists: " + userID
 		fmt.Println(msg)
 		return shim.Error(msg)
 	}
 	// ==== Create user object and marshal to JSON ====
-	objectType := "user"
-	user := &User{user_id, user_type, fullname, farms, account_details, home_address, phone, email}
+	//accounts := &Account{accountNumber, balance, bankName}
+	//crops :=  []Crop{{cropName, cropType, season, cropState}}
+	farms := []Farm{{FarmID: farmID, Address: address, Coordinates: coordinates, CropDetails: []Crop{{cropName, cropType, season, cropState}}}}
+	user := User{UserID: userID, UserType: userType, FullName: fullname, Farms: farms, AccountDetails: []Account{{accountNumber, balance, bankName}}, HomeAddress: homeAddress, Phone: phone, Email: email}
 	userJSONasBytes, err := json.Marshal(user)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
-	err = APIstub.PutState(user_id, userJSONasBytes)
+	err = APIstub.PutState(userID, userJSONasBytes)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 
 	// maintain the index
-	indexName := "user_id~fullname"
-	idNameIndexKey, err := APIstub.CreateCompositeKey(indexName, []string{User.User_Id, User.FullName})
+	indexName := "userID~fullname"
+	idNameIndexKey, err := APIstub.CreateCompositeKey(indexName, []string{userID, fullname})
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -149,7 +163,7 @@ func (s *Users) registerUser(APIstub shim.ChaincodeStubInterface, args []string)
 	APIstub.PutState(idNameIndexKey, value)
 
 	fmt.Println("============= END : User registration done =============")
-	return shim.Success(result)
+	return shim.Success(nil)
 }
 
 //==============================================================================================================================
@@ -160,13 +174,13 @@ func (s *Users) fetchUserDataByUserID(APIstub shim.ChaincodeStubInterface, args 
 	if len(args) != 1 {
 		return shim.Error("Incorrect number of arguments. Expecting user id of the user to query")
 	}
-	user_id = args[0]
-	valAsbytes, err := APIstub.GetState(user_id) //get the user from chaincode state
+	userID := args[0]
+	valAsbytes, err := APIstub.GetState(userID) //get the user from chaincode state
 	if err != nil {
-		jsonResp = "{\"Error\":\"Failed to get state for " + user_id + "\"}"
+		jsonResp := "{\"Error\":\"Failed to get state for " + userID + "\"}"
 		return shim.Error(jsonResp)
 	} else if valAsbytes == nil {
-		jsonResp = "{\"Error\":\"user does not exist: " + user_id + "\"}"
+		jsonResp := "{\"Error\":\"user does not exist: " + userID + "\"}"
 		return shim.Error(jsonResp)
 	}
 	fmt.Println("============= END : Fetched user data by user id =============")
@@ -197,9 +211,9 @@ func (s *Users) fetchUserByType(APIstub shim.ChaincodeStubInterface, args []stri
 		return shim.Error("Incorrect number of arguments. Expecting 1")
 	}
 
-	user_type := strings.ToLower(args[0])
+	userType := strings.ToLower(args[0])
 
-	queryString := fmt.Sprintf("{\"selector\":{\"user_type\":\"%s\"}}", user_type)
+	queryString := fmt.Sprintf("{\"selector\":{\"userType\":\"%s\"}}", userType)
 	fmt.Println("fetchUserByType:: queryString: ", queryString)
 	queryResults, err := getQueryResultForQueryString(APIstub, queryString)
 	if err != nil {
@@ -208,6 +222,65 @@ func (s *Users) fetchUserByType(APIstub shim.ChaincodeStubInterface, args []stri
 	fmt.Println("fetchUserByType:: queryResults: ", queryResults)
 	fmt.Println("============= END : Fetched user data by user type =============")
 	return shim.Success(queryResults)
+}
+
+// =========================================================================================
+// getQueryResultForQueryString executes the passed in query string.
+// Result set is built and returned as a byte array containing the JSON results.
+// =========================================================================================
+func getQueryResultForQueryString(stub shim.ChaincodeStubInterface, queryString string) ([]byte, error) {
+
+	fmt.Printf("- getQueryResultForQueryString queryString:\n%s\n", queryString)
+
+	resultsIterator, err := stub.GetQueryResult(queryString)
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	buffer, err := constructQueryResponseFromIterator(resultsIterator)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Printf("- getQueryResultForQueryString queryResult:\n%s\n", buffer.String())
+
+	return buffer.Bytes(), nil
+}
+
+// ===========================================================================================
+// constructQueryResponseFromIterator constructs a JSON array containing query results from
+// a given result iterator
+// ===========================================================================================
+func constructQueryResponseFromIterator(resultsIterator shim.StateQueryIteratorInterface) (*bytes.Buffer, error) {
+	// buffer is a JSON array containing QueryResults
+	var buffer bytes.Buffer
+	buffer.WriteString("[")
+
+	bArrayMemberAlreadyWritten := false
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return nil, err
+		}
+		// Add a comma before array members, suppress it for the first array member
+		if bArrayMemberAlreadyWritten == true {
+			buffer.WriteString(",")
+		}
+		buffer.WriteString("{\"Key\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(queryResponse.Key)
+		buffer.WriteString("\"")
+
+		buffer.WriteString(", \"Record\":")
+		// Record is a JSON object, so we write as-is
+		buffer.WriteString(string(queryResponse.Value))
+		buffer.WriteString("}")
+		bArrayMemberAlreadyWritten = true
+	}
+	buffer.WriteString("]")
+
+	return &buffer, nil
 }
 
 //==============================================================================================================================
@@ -219,10 +292,10 @@ func (s *Users) fetchUserByType(APIstub shim.ChaincodeStubInterface, args []stri
 // 		return shim.Error("Incorrect number of arguments. Expecting 2")
 // 	}
 
-// 	user_id := args[0]
+// 	userID := args[0]
 // 	account_number := args[1]
 
-// 	queryString := fmt.Sprintf("{\"selector\":{\"user_id\":\"%s\",\"account_number\":\"%d\"}}", user_id, account_number)
+// 	queryString := fmt.Sprintf("{\"selector\":{\"userID\":\"%s\",\"account_number\":\"%d\"}}", userID, account_number)
 // 	fmt.Println("fetchBalanceByAccount:: queryString: ", queryString)
 // 	queryResults, err := getQueryResultForQueryString(APIstub, queryString)
 // 	if err != nil {
@@ -242,9 +315,9 @@ func (s *Users) fetchFarmsByUserId(APIstub shim.ChaincodeStubInterface, args []s
 		return shim.Error("Incorrect number of arguments. Expecting 1")
 	}
 
-	user_id := args[0]
+	userID := args[0]
 
-	queryString := fmt.Sprintf("{\"selector\":{\"user_id\":\"%s\"}}", user_id)
+	queryString := fmt.Sprintf("{\"selector\":{\"userID\":\"%s\"}}", userID)
 	fmt.Println("fetchFarmsByUserId:: queryString: ", queryString)
 	queryResults, err := getQueryResultForQueryString(APIstub, queryString)
 	if err != nil {
@@ -264,9 +337,9 @@ func (s *Users) fetchAccountsByUserId(APIstub shim.ChaincodeStubInterface, args 
 		return shim.Error("Incorrect number of arguments. Expecting 1")
 	}
 
-	user_id := args[0]
+	userID := args[0]
 
-	queryString := fmt.Sprintf("{\"selector\":{\"user_id\":\"%s\"}}", user_id)
+	queryString := fmt.Sprintf("{\"selector\":{\"userID\":\"%s\"}}", userID)
 	fmt.Println("fetchAccountsByUserId:: queryString: ", queryString)
 	queryResults, err := getQueryResultForQueryString(APIstub, queryString)
 	if err != nil {
