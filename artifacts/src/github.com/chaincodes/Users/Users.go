@@ -100,33 +100,70 @@ func (s *Users) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
 func (s *Users) registerUser(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 	fmt.Println("============= START : Registering a user =============")
 	fmt.Println("args: ", args)
-	if len(args) != 15 {
-		msg := "Incorrect number of arguments. Expected 15 arguments."
+	var userID, fullname, farmID, address, coordinates, cropName, cropType, season, cropState, bankName, homeAddress, email string
+	var accountNumber, phone int
+	var balance float64
+	userType := strings.ToLower(args[1])
+	var err error
+	if userType == "farmer" {
+		if len(args) != 15 {
+			msg := "Incorrect number of arguments. Expected 15 arguments."
+			fmt.Println(msg)
+			return shim.Error(msg)
+		}
+		userID = args[0]
+		fullname = args[2]
+		farmID = args[3]
+		address = args[4]
+		coordinates = args[5]
+		cropName = args[6]
+		cropType = args[7]
+		season = args[8]
+		cropState = args[9]
+		accountNumber, err = strconv.Atoi(args[10])
+		if err != nil {
+			return shim.Error("accountNumber must be a numeric string")
+		}
+		balance = 0.0
+		bankName = args[11]
+		homeAddress = args[12]
+		phone, err = strconv.Atoi(args[13])
+		if err != nil {
+			return shim.Error("phone must be a numeric string")
+		}
+		email = args[14]
+	} else if userType == "insurer" {
+		if len(args) != 8 {
+			msg := "Incorrect number of arguments. Expected 8 arguments."
+			fmt.Println(msg)
+			return shim.Error(msg)
+		}
+		userID = args[0]
+		fullname = args[2]
+		farmID = ""
+		address = ""
+		coordinates = ""
+		cropName = ""
+		cropType = ""
+		season = ""
+		cropState = ""
+		accountNumber, err = strconv.Atoi(args[3])
+		if err != nil {
+			return shim.Error("accountNumber must be a numeric string")
+		}
+		balance = 0.0
+		bankName = args[4]
+		homeAddress = args[5]
+		phone, err = strconv.Atoi(args[6])
+		if err != nil {
+			return shim.Error("phone must be a numeric string")
+		}
+		email = args[7]
+	} else {
+		msg := "Invalid User Type."
 		fmt.Println(msg)
 		return shim.Error(msg)
 	}
-	userID := args[0]
-	userType := strings.ToLower(args[1])
-	fullname := args[2]
-	farmID := args[3]
-	address := args[4]
-	coordinates := args[5]
-	cropName := args[6]
-	cropType := args[7]
-	season := args[8]
-	cropState := args[9]
-	accountNumber, err := strconv.Atoi(args[10])
-	if err != nil {
-		return shim.Error("accountNumber must be a numeric string")
-	}
-	balance := 0.0
-	bankName := args[11]
-	homeAddress := args[12]
-	phone, err := strconv.Atoi(args[13])
-	if err != nil {
-		return shim.Error("phone must be a numeric string")
-	}
-	email := args[14]
 
 	// ==== Check if user already exists ====
 	userAsBytes, err := APIstub.GetState(userID)
