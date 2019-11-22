@@ -3,7 +3,7 @@
 
 // let url='https://maps.googleapis.com/maps/api/geocode/json?address=';
 // let API_KEY='b1a922289ad34d00bda61f29445e2a07'
-let address = "New Sanganer Road Jai Shanker Colony Geetanjali Colony, Manyawas, Mansarovar Sector 4, Jaipur, Rajasthan 302020"
+let address = "Lyngkein, Hima Mawphlang, Mawmyrsiang, Meghalaya 793121"
 // url = url+address+"&"+API_KEY;
 // console.log("url: ", url);
 
