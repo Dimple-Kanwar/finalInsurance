@@ -1,0 +1,176 @@
+{
+    "UserID":"1",
+    "FullName":"user1",
+    "UserType":"Farmer",
+    "Farms":[
+        {
+            "FarmID":"farm1",
+            "Address":"",
+            "Coordinates":"70.0103759765625,26.966141794817037",
+            "CropDetails":[
+                {
+                    "CropName" :"",
+                    "CropType"    :  "",
+                    "Season"    :"",
+                    "CropState"    :""
+                }     
+            ]            
+        }
+    ],
+    "AccountDetails":[{
+        "AccountNumber" :"963258741",
+        "Balance"    :  "0",
+        "BankName"    :"SBI Bank"
+    }     
+    ],
+    "HomeAddress":"",
+    "Phone":"",
+    "Email":"user1@gmail.com"
+},
+{
+    "UserID":"2",
+    "FullName":"user2",
+    "UserType":"Farmer",
+    "Farms":[
+        {
+            "FarmID":"farm2",
+            "Address":"",
+            "Coordinates":"93.5980224609375,27.401032392938866",
+            "CropDetails":[
+                {
+                    "CropName" :"",
+                    "CropType"    :  "",
+                    "Season"    :"",
+                    "CropState"    :""
+                }     
+            ]  
+        },{
+            "FarmID":"farm4",
+            "Address":"",
+            "Coordinates":" 93.66943359374999,28.323724553546015",
+            "CropDetails":[
+                {
+                    "CropName" :"",
+                    "CropType"    :  "",
+                    "Season"    :"",
+                    "CropState"    :""
+                }     
+            ]          
+        }
+    ],
+    "AccountDetails":[{
+        "AccountNumber" :"852147963",
+        "Balance"    :  "0",
+        "BankName"    :"ICICI Bank"
+    }     
+    ],
+    "HomeAddress":"",
+    "Phone":"",
+    "Email":"user2@gmail.com"
+},
+{
+    "UserID":"3",
+    "FullName":"user3",
+    "UserType":"Farmer",
+    "Farms":[
+        {
+            "FarmID":"farm5",
+            "Address":"",
+            "Coordinates":"73.65875959396362,17.92280106988237",
+            "CropDetails":[
+                {
+                    "CropName" :"",
+                    "CropType"    :  "",
+                    "Season"    :"",
+                    "CropState"    :""
+                }     
+            ]           
+        },{
+            "FarmID":"farm6",
+            "Address":"",
+            "Coordinates":"73.65654945373535,17.923209396902255",
+            "CropDetails":[
+                {
+                    "CropName" :"",
+                    "CropType"    :  "",
+                    "Season"    :"",
+                    "CropState"    :""
+                }     
+            ]          
+        }
+    ],
+    "AccountDetails":[{
+        "AccountNumber" :"741258963",
+        "Balance"    :  "0",
+        "BankName"    :"HDFC Bank"
+    }     
+    ],
+    "HomeAddress":"",
+    "Phone":"",
+    "Email":"user3@gmail.com"
+},
+{
+    "UserID":"4",
+    "FullName":"user4",
+    "UserType":"Farmer",
+    "Farms":[
+        {
+            "FarmID":"farm7",
+            "Address":"",
+            "Coordinates":"95.3335189819336,28.05796872453289",
+            "CropDetails":[
+                {
+                    "CropName" :"",
+                    "CropType"    :  "",
+                    "Season"    :"",
+                    "CropState"    :""
+                }     
+            ]          
+        }
+    ],
+    "AccountDetails":[{
+        "AccountNumber" :"456321789",
+        "Balance"    :  "0",
+        "BankName"    :"SBI Bank"
+    }     
+    ],
+    "HomeAddress":"",
+    "Phone":"",
+    "Email":"user4@gmail.com"
+},
+{
+    "UserID":"5",
+    "FullName":"user5",
+    "UserType":"Farmer",
+    "Farms":[
+        {
+            "FarmID":"farm8",
+            "Address":"",
+            "Coordinates":"77.34374999999999,20.673905264672843",
+            "CropDetails":[
+                {
+                    "CropName" :"",
+                    "CropType"    :  "",
+                    "Season"    :"",
+                    "CropState"    :""
+                }     
+            ] 
+        },{
+            "FarmID":"farm9",
+            "Address":"",
+            "Coordinates":"",
+            "CropDetails":[
+
+            ]            
+        }
+    ],
+    "AccountDetails":[{
+        "AccountNumber" :"523698741",
+        "Balance"    :  "0",
+        "BankName"    :"ICICI Bank"
+    }     
+    ],
+    "HomeAddress":"",
+    "Phone":"",
+    "Email":"user5@gmail.com"
+}
